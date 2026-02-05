@@ -128,21 +128,21 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 overflow-y-auto pb-20 md:pb-0">
+                    <div className="grid grid-cols-3 lg:grid-cols-3 gap-2 overflow-y-auto pb-48 md:pb-0">
                         {filteredProducts.map(product => (
                             <Card
                                 key={product.id}
                                 className="cursor-pointer hover:border-blue-500 transition-colors active:scale-95"
                                 onClick={() => addToCart(product)}
                             >
-                                <CardContent className="p-4 flex flex-col items-center text-center gap-2">
-                                    <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold overflow-hidden">
+                                <CardContent className="p-2 flex flex-col items-center text-center gap-1">
+                                    <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold overflow-hidden text-xs">
                                         {product.name.substring(0, 2).toUpperCase()}
                                     </div>
-                                    <h3 className="font-medium text-sm leading-tight h-10 flex items-center justify-center">
+                                    <h3 className="font-medium text-xs leading-tight h-8 flex items-center justify-center line-clamp-2">
                                         {product.name}
                                     </h3>
-                                    <div className="font-bold text-lg text-blue-600">
+                                    <div className="font-bold text-sm text-blue-600">
                                         ${product.price.toFixed(2)}
                                     </div>
                                 </CardContent>
@@ -152,40 +152,40 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                 </div>
 
                 {/* Cart/Ticket Section */}
-                <div className="w-full md:w-96 bg-white rounded-xl shadow-lg border flex flex-col h-[40vh] md:h-full fixed md:relative bottom-16 md:bottom-0 left-0 right-0 z-40 md:z-0">
-                    <div className="p-4 border-b bg-gray-50 rounded-t-xl flex justify-between items-center">
-                        <h2 className="font-bold flex items-center gap-2">
-                            <ShoppingCart className="w-5 h-5" />
-                            Ticket Actual
+                <div className="w-full md:w-96 bg-white rounded-t-xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] border-t flex flex-col h-[30vh] md:h-full fixed md:relative bottom-16 md:bottom-0 left-0 right-0 z-40 md:z-0">
+                    <div className="p-2 border-b bg-gray-50 rounded-t-xl flex justify-between items-center h-10">
+                        <h2 className="font-bold flex items-center gap-2 text-sm">
+                            <ShoppingCart className="w-4 h-4" />
+                            Ticket ({cart.reduce((acc, i) => acc + i.quantity, 0)})
                         </h2>
-                        <Button variant="ghost" size="sm" onClick={() => setCart([])} disabled={cart.length === 0}>
-                            <Trash2 className="w-4 h-4 text-red-500" />
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setCart([])} disabled={cart.length === 0}>
+                            <Trash2 className="w-3 h-3 text-red-500" />
                         </Button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    <div className="flex-1 overflow-y-auto p-2 space-y-2">
                         {cart.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-2">
-                                <ShoppingCart className="w-12 h-12 opacity-20" />
-                                <p>Ticket vacío</p>
+                            <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-1">
+                                <ShoppingCart className="w-8 h-8 opacity-20" />
+                                <p className="text-xs">Vacío</p>
                             </div>
                         ) : (
                             cart.map(item => (
-                                <div key={item.id} className="flex justify-between items-center">
-                                    <div className="flex-1">
-                                        <p className="font-medium text-sm">{item.name}</p>
-                                        <p className="text-xs text-gray-500">${item.price.toFixed(2)} x {item.quantity}</p>
+                                <div key={item.id} className="flex justify-between items-center text-xs">
+                                    <div className="flex-1 truncate pr-2">
+                                        <p className="font-medium truncate">{item.name}</p>
+                                        <p className="text-gray-500 text-[10px]">${item.price.toFixed(2)} x {item.quantity}</p>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, -1)}>
+                                    <div className="flex items-center gap-1">
+                                        <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(item.id, -1)}>
                                             <Minus className="w-3 h-3" />
                                         </Button>
-                                        <span className="w-4 text-center text-sm font-medium">{item.quantity}</span>
-                                        <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, 1)}>
+                                        <span className="w-4 text-center font-medium">{item.quantity}</span>
+                                        <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(item.id, 1)}>
                                             <Plus className="w-3 h-3" />
                                         </Button>
                                     </div>
-                                    <div className="w-16 text-right font-medium text-sm">
+                                    <div className="w-14 text-right font-medium">
                                         ${(item.price * item.quantity).toFixed(2)}
                                     </div>
                                 </div>
@@ -193,17 +193,17 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                         )}
                     </div>
 
-                    <div className="p-4 border-t bg-gray-50 rounded-b-xl space-y-3">
-                        <div className="flex justify-between items-center text-lg font-bold">
+                    <div className="p-2 border-t bg-gray-50 space-y-2">
+                        <div className="flex justify-between items-center text-sm font-bold">
                             <span>Total</span>
                             <span>${total.toFixed(2)}</span>
                         </div>
                         <Button
-                            className="w-full h-12 text-lg"
+                            className="w-full h-10 text-base"
                             disabled={cart.length === 0 || isSubmitting}
                             onClick={handleCheckoutClick}
                         >
-                            {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin" /> : "Cobrar"}
+                            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Cobrar"}
                         </Button>
                     </div>
                 </div>
