@@ -1,10 +1,24 @@
 "use server"
 
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient, PaymentMethod } from "@prisma/client"
 
 const prisma = new PrismaClient()
 
 export async function getProducts() {
+    // ... existing code ...
+    // Ensure "BEBIDA" product exists (Placeholder)
+    const bebidaProduct = await prisma.product.findFirst({ where: { name: "Bebida", category: "BEBIDA" } })
+    if (!bebidaProduct) {
+        await prisma.product.create({
+            data: {
+                name: "Bebida",
+                category: "BEBIDA",
+                price: 1.00,
+                active: true
+            }
+        })
+    }
+
     const products = await prisma.product.findMany({
         where: { active: true },
         orderBy: { category: 'asc' },
@@ -24,6 +38,7 @@ export async function createSale(data: {
     items: { productId: string, quantity: number, unitPrice: number, name?: string }[],
     total: number,
     paymentMethod: "CASH" | "TRANSFER" | "MOBILE_PAYMENT", // Matches specific string union
+    paymentReference?: string, // New optional field
     notes?: string
 }) {
     try {
@@ -65,7 +80,8 @@ export async function createSale(data: {
             data: {
                 userId: user.id,
                 total: data.total,
-                paymentMethod: data.paymentMethod,
+                paymentMethod: data.paymentMethod as PaymentMethod,
+                paymentReference: data.paymentReference, // Save reference
                 notes: data.notes,
                 items: {
                     create: data.items.map(item => {

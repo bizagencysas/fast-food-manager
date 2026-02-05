@@ -58,6 +58,7 @@ model Sale {
   date          DateTime      @default(now())
   notes         String?
   imageUrl      String?       // Comprobante si es transferencia
+  paymentReference String?    // Last 4 digits for Transfer/Mobile Payment
   
   userId        String
   user          User          @relation(fields: [userId], references: [id])

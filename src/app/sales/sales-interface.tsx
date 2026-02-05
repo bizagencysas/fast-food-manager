@@ -35,6 +35,10 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
     const [customItemName, setCustomItemName] = useState("")
     const [customItemPrice, setCustomItemPrice] = useState("")
 
+    // Payment Flow State
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"TRANSFER" | "MOBILE_PAYMENT" | null>(null)
+    const [paymentReference, setPaymentReference] = useState("")
+
     const filteredProducts = initialProducts.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
         const matchesCategory = selectedCategory ? product.category === selectedCategory : true
@@ -110,6 +114,7 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
             })),
             total: total,
             paymentMethod: method,
+            paymentReference: ((method === "TRANSFER" || method === "MOBILE_PAYMENT") && paymentReference) ? paymentReference : undefined
         })
 
         setIsSubmitting(false)
@@ -291,21 +296,68 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                 {showPaymentModal && (
                     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
                         <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 animate-in fade-in zoom-in duration-200 space-y-4">
-                            <h3 className="text-xl font-bold text-center mb-4 text-black">Seleccione Método de Pago</h3>
-                            <div className="grid grid-cols-1 gap-3">
-                                <Button size="lg" className="w-full bg-black text-white hover:bg-gray-800 text-lg py-6 shadow-md border border-gray-800" onClick={() => processSale("CASH")}>
-                                    Efectivo 💵
-                                </Button>
-                                <Button size="lg" className="w-full bg-black text-white hover:bg-gray-800 text-lg py-6 shadow-md border border-gray-800" onClick={() => processSale("TRANSFER")}>
-                                    Transferencia 🏦
-                                </Button>
-                                <Button size="lg" className="w-full bg-black text-white hover:bg-gray-800 text-lg py-6 shadow-md border border-gray-800" onClick={() => processSale("MOBILE_PAYMENT")}>
-                                    Pago Móvil 📱
-                                </Button>
-                            </div>
-                            <Button variant="outline" className="w-full mt-4 text-black border-black hover:bg-gray-100 font-bold" onClick={() => setShowPaymentModal(false)}>
-                                Cancelar
-                            </Button>
+                            {!selectedPaymentMethod ? (
+                                <>
+                                    <h3 className="text-xl font-bold text-center mb-4 text-black">Seleccione Método de Pago</h3>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        <Button size="lg" className="w-full bg-black text-white hover:bg-gray-800 text-lg py-6 shadow-md border border-gray-800" onClick={() => processSale("CASH")}>
+                                            Efectivo 💵
+                                        </Button>
+                                        <Button size="lg" className="w-full bg-black text-white hover:bg-gray-800 text-lg py-6 shadow-md border border-gray-800" onClick={() => setSelectedPaymentMethod("TRANSFER")}>
+                                            Transferencia 🏦
+                                        </Button>
+                                        <Button size="lg" className="w-full bg-black text-white hover:bg-gray-800 text-lg py-6 shadow-md border border-gray-800" onClick={() => setSelectedPaymentMethod("MOBILE_PAYMENT")}>
+                                            Pago Móvil 📱
+                                        </Button>
+                                    </div>
+                                    <Button variant="outline" className="w-full mt-4 text-black border-black hover:bg-gray-100 font-bold" onClick={() => setShowPaymentModal(false)}>
+                                        Cancelar
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <h3 className="text-xl font-bold text-center mb-2 text-black">
+                                        {selectedPaymentMethod === "TRANSFER" ? "Transferencia" : "Pago Móvil"}
+                                    </h3>
+                                    <p className="text-sm text-center text-gray-500 mb-4">
+                                        Total a Pagar: <span className="font-bold text-black text-lg">${total.toFixed(2)}</span>
+                                    </p>
+
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="text-sm font-bold text-black mb-1 block">Referencia (Últimos 4 dígitos)</label>
+                                            <Input
+                                                autoFocus
+                                                type="number"
+                                                placeholder="0000"
+                                                maxLength={4}
+                                                className="text-center text-2xl tracking-widest font-bold"
+                                                value={paymentReference}
+                                                onChange={(e) => {
+                                                    const val = e.target.value.slice(0, 4)
+                                                    setPaymentReference(val)
+                                                }}
+                                            />
+                                        </div>
+
+                                        <Button
+                                            size="lg"
+                                            className="w-full bg-black text-white hover:bg-gray-800 text-lg font-bold shadow-md"
+                                            disabled={paymentReference.length < 4}
+                                            onClick={() => processSale(selectedPaymentMethod)}
+                                        >
+                                            Confirmar Pago
+                                        </Button>
+
+                                        <Button variant="ghost" className="w-full text-black hover:bg-gray-100" onClick={() => {
+                                            setSelectedPaymentMethod(null)
+                                            setPaymentReference("")
+                                        }}>
+                                            Atrás
+                                        </Button>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 )}
