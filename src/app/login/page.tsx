@@ -49,7 +49,7 @@ export default function LoginPage() {
                                 type="text"
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
-                                placeholder="freddy"
+                                placeholder="usuario"
                             />
                         </div>
                         <div className="space-y-2">
@@ -62,7 +62,9 @@ export default function LoginPage() {
                             />
                         </div>
                         {error && <p className="text-red-500 text-sm">{error}</p>}
-                        <Button type="submit" className="w-full">Entrar</Button>
+                        <Button type="submit" className="w-full bg-black text-white hover:bg-gray-800 transition-colors shadow-sm">
+                            Entrar
+                        </Button>
                     </form>
                 </CardContent>
             </Card>
