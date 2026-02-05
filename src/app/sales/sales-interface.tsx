@@ -31,6 +31,10 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [showPaymentModal, setShowPaymentModal] = useState(false)
 
+    const [isCustomModalOpen, setIsCustomModalOpen] = useState(false)
+    const [customItemName, setCustomItemName] = useState("")
+    const [customItemPrice, setCustomItemPrice] = useState("")
+
     const filteredProducts = initialProducts.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
         const matchesCategory = selectedCategory ? product.category === selectedCategory : true
@@ -50,6 +54,25 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
             }
             return [...prev, { ...product, quantity: 1 }]
         })
+    }
+
+    const handleAddCustomItem = () => {
+        if (!customItemName || !customItemPrice) return
+
+        const price = parseFloat(customItemPrice)
+        if (isNaN(price)) return
+
+        const customProduct: Product = {
+            id: `custom-${Date.now()}`,
+            name: customItemName,
+            price: price,
+            category: 'OTRO'
+        }
+
+        addToCart(customProduct)
+        setCustomItemName("")
+        setCustomItemPrice("")
+        setIsCustomModalOpen(false)
     }
 
     const updateQuantity = (productId: string, delta: number) => {
@@ -82,7 +105,8 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
             items: cart.map(i => ({
                 productId: i.id,
                 quantity: i.quantity,
-                unitPrice: i.price
+                unitPrice: i.price,
+                name: i.name // Pass name for custom items
             })),
             total: total,
             paymentMethod: method,
@@ -129,6 +153,24 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                     </div>
 
                     <div className="grid grid-cols-3 lg:grid-cols-3 gap-2 overflow-y-auto pb-48 md:pb-0">
+                        {/* Always show Custom Item Button first */}
+                        <Card
+                            className="cursor-pointer border-dashed border-2 border-gray-300 hover:border-black transition-colors active:scale-95 bg-gray-50"
+                            onClick={() => setIsCustomModalOpen(true)}
+                        >
+                            <CardContent className="p-2 flex flex-col items-center text-center gap-1 h-full justify-center">
+                                <div className="h-8 w-8 bg-black rounded-full flex items-center justify-center text-white font-bold overflow-hidden text-xs">
+                                    <Plus className="w-4 h-4" />
+                                </div>
+                                <h3 className="font-bold text-xs leading-tight">
+                                    OTRO
+                                </h3>
+                                <div className="text-[10px] text-gray-500">
+                                    Manual
+                                </div>
+                            </CardContent>
+                        </Card>
+
                         {filteredProducts.map(product => (
                             <Card
                                 key={product.id}
@@ -207,6 +249,43 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                         </Button>
                     </div>
                 </div>
+
+                {/* Custom Item Modal */}
+                {isCustomModalOpen && (
+                    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 animate-in fade-in zoom-in duration-200 space-y-4">
+                            <h3 className="text-xl font-bold text-center mb-0">Agregar Item Personalizado</h3>
+                            <div className="space-y-3">
+                                <div>
+                                    <label className="text-sm font-medium">Descripción</label>
+                                    <Input
+                                        value={customItemName}
+                                        onChange={e => setCustomItemName(e.target.value)}
+                                        placeholder="Ej: Perro Mixto"
+                                        autoFocus
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium">Precio ($)</label>
+                                    <Input
+                                        type="number"
+                                        value={customItemPrice}
+                                        onChange={e => setCustomItemPrice(e.target.value)}
+                                        placeholder="0.00"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex gap-2 pt-2">
+                                <Button variant="outline" className="flex-1" onClick={() => setIsCustomModalOpen(false)}>
+                                    Cancelar
+                                </Button>
+                                <Button className="flex-1 bg-black text-white" onClick={handleAddCustomItem}>
+                                    Agregar
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Payment Modal */}
                 {showPaymentModal && (

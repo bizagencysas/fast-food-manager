@@ -21,9 +21,9 @@ export async function getProducts() {
 
 export async function createSale(data: {
     userId: string,
-    items: { productId: string, quantity: number, unitPrice: number }[],
+    items: { productId: string, quantity: number, unitPrice: number, name?: string }[],
     total: number,
-    paymentMethod: "CASH" | "TRANSFER" | "MOBILE_PAYMENT",
+    paymentMethod: "CASH" | "TRANSFER" | "MOBILE_PAYMENT", // Matches specific string union
     notes?: string
 }) {
     try {
@@ -35,31 +35,57 @@ export async function createSale(data: {
                 id: 'admin-id',
                 email: 'freddy',
                 name: 'Freddy Admin',
-                passwordHash: 'freddy', // In real app, hash this
+                passwordHash: 'freddy',
                 role: 'ADMIN'
             }
         })
+
+        // Ensure "PERSONALIZADO" product exists for custom items
+        // We'll use a fixed strategy: find first 'OTRO' category product or create one
+        let customProductId = ""
+        const customProduct = await prisma.product.findFirst({
+            where: { category: 'OTRO' }
+        })
+
+        if (customProduct) {
+            customProductId = customProduct.id
+        } else {
+            const newCustom = await prisma.product.create({
+                data: {
+                    name: "PERSONALIZADO",
+                    category: "OTRO",
+                    price: 0,
+                    active: true
+                }
+            })
+            customProductId = newCustom.id
+        }
 
         const sale = await prisma.sale.create({
             data: {
                 userId: user.id,
                 total: data.total,
-                paymentMethod: data.paymentMethod, // Matches specific string union
+                paymentMethod: data.paymentMethod,
                 notes: data.notes,
                 items: {
-                    create: data.items.map(item => ({
-                        productId: item.productId,
-                        quantity: item.quantity,
-                        unitPrice: item.unitPrice,
-                        subtotal: item.quantity * item.unitPrice
-                    }))
+                    create: data.items.map(item => {
+                        // If productId looks like a temp ID (starts with 'custom-'), switch to generic ID
+                        const isCustom = item.productId.startsWith('custom-')
+                        return {
+                            productId: isCustom ? customProductId : item.productId,
+                            quantity: item.quantity,
+                            unitPrice: item.unitPrice,
+                            subtotal: item.quantity * item.unitPrice,
+                            // Save the specific name/desc
+                            productName: item.name || (isCustom ? "Item Personalizado" : undefined)
+                        }
+                    })
                 }
             }
         })
         return { success: true, saleId: sale.id }
     } catch (error) {
         console.error("Sale creation error:", error)
-        // Return the actual error message for debugging
         return { success: false, error: String(error) }
     }
 }

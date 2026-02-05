@@ -78,6 +78,7 @@ model SaleItem {
   quantity  Int
   unitPrice Decimal @db.Decimal(10, 2)
   subtotal  Decimal @db.Decimal(10, 2)
+  productName String? // Snapshot of product name or custom description
 }
 
 model InventoryCategory {
