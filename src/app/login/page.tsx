@@ -16,24 +16,19 @@ export default function LoginPage() {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
-        // Since we didn't wrap app with SessionProvider yet, we might mostly rely on server actions or just trying it.
-        // Actually next-auth v5 works best with server actions, but for client component:
         try {
-            // Note: Client side signIn from next-auth/react is standard for Credentials?
-            // Wait, for NextAuth v5 (Auth.js), recommended way is server action.
-            // I'll simulate a server action for clarity or use REST.
-            // Let's stick to simple form submission for now or mock it if complex to setup SessionProvider.
-            // Actually, I'll assume standard setup.
+            const result = await signIn("credentials", {
+                email,
+                password,
+                redirect: false
+            })
 
-            // Temporary: hardcoded redirect for demo if Auth setup is tricky without SessionProvider
-            if (email === 'admin@demo.com') {
-                // Mock success
+            if (result?.error) {
+                setError("Credenciales incorrectas")
+            } else {
                 router.push('/')
-                return
+                router.refresh()
             }
-
-            // Real attempt (will fail if provider not wrapped or API not perfect)
-            // await signIn("credentials", { email, password, redirectTo: "/" })
         } catch (err) {
             setError("Error al iniciar sesión")
         }
@@ -49,12 +44,12 @@ export default function LoginPage() {
                 <CardContent>
                     <form onSubmit={handleLogin} className="space-y-4">
                         <div className="space-y-2">
-                            <label>Email</label>
+                            <label>Usuario</label>
                             <Input
-                                type="email"
+                                type="text"
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
-                                placeholder="admin@demo.com"
+                                placeholder="freddy"
                             />
                         </div>
                         <div className="space-y-2">
@@ -63,7 +58,7 @@ export default function LoginPage() {
                                 type="password"
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
-                                placeholder="admin"
+                                placeholder="******"
                             />
                         </div>
                         {error && <p className="text-red-500 text-sm">{error}</p>}
