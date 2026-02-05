@@ -78,11 +78,12 @@ export default function FinanceInterface({ data }: { data: any }) {
         }
 
         if (result && result.success) {
-            alert("Registro exitoso")
+            alert("✅ Registro exitoso")
             setFormData({ category: "", description: "", amount: "", partnerName: "", type: "", concept: "" })
             setFile(null)
         } else {
-            alert("Error al registrar")
+            // @ts-ignore
+            alert(`❌ Error al registrar: ${result?.error || "Error desconocido"}`)
         }
         setIsSubmitting(false)
     }
