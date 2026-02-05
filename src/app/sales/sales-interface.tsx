@@ -209,25 +209,25 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                         {cart.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-1">
                                 <ShoppingCart className="w-8 h-8 opacity-20" />
-                                <p className="text-xs">Vacío</p>
+                                <p className="text-xs text-black font-medium">Carrito Vacío</p>
                             </div>
                         ) : (
                             cart.map(item => (
-                                <div key={item.id} className="flex justify-between items-center text-xs">
+                                <div key={item.id} className="flex justify-between items-center text-xs text-black font-medium">
                                     <div className="flex-1 truncate pr-2">
-                                        <p className="font-medium truncate">{item.name}</p>
-                                        <p className="text-gray-500 text-[10px]">${item.price.toFixed(2)} x {item.quantity}</p>
+                                        <p className="truncate font-bold text-black">{item.name}</p>
+                                        <p className="text-black font-semibold text-[10px]">${item.price.toFixed(2)} x {item.quantity}</p>
                                     </div>
                                     <div className="flex items-center gap-1">
-                                        <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(item.id, -1)}>
+                                        <Button variant="outline" size="icon" className="h-6 w-6 border-black text-black" onClick={() => updateQuantity(item.id, -1)}>
                                             <Minus className="w-3 h-3" />
                                         </Button>
-                                        <span className="w-4 text-center font-medium">{item.quantity}</span>
-                                        <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(item.id, 1)}>
+                                        <span className="w-4 text-center font-bold text-black">{item.quantity}</span>
+                                        <Button variant="outline" size="icon" className="h-6 w-6 border-black text-black" onClick={() => updateQuantity(item.id, 1)}>
                                             <Plus className="w-3 h-3" />
                                         </Button>
                                     </div>
-                                    <div className="w-14 text-right font-medium">
+                                    <div className="w-14 text-right font-bold text-black">
                                         ${(item.price * item.quantity).toFixed(2)}
                                     </div>
                                 </div>
@@ -236,12 +236,12 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                     </div>
 
                     <div className="p-2 border-t bg-gray-50 space-y-2">
-                        <div className="flex justify-between items-center text-sm font-bold">
+                        <div className="flex justify-between items-center text-sm font-bold text-black">
                             <span>Total</span>
                             <span>${total.toFixed(2)}</span>
                         </div>
                         <Button
-                            className="w-full h-10 text-base"
+                            className="w-full h-10 text-base bg-black text-white hover:bg-gray-800 shadow-md font-bold"
                             disabled={cart.length === 0 || isSubmitting}
                             onClick={handleCheckoutClick}
                         >
