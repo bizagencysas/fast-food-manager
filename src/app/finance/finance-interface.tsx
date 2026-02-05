@@ -91,31 +91,31 @@ export default function FinanceInterface({ data }: { data: any }) {
     return (
         <AppLayout>
             <div className="space-y-6">
-                <h2 className="text-2xl font-bold">Finanzas</h2>
+                <h2 className="text-2xl font-bold text-black">Finanzas</h2>
 
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                    <TabsList className="grid w-full grid-cols-4">
-                        <TabsTrigger value="expenses">Gastos</TabsTrigger>
-                        <TabsTrigger value="investments">Inversiones</TabsTrigger>
-                        <TabsTrigger value="withdrawals">Retiros</TabsTrigger>
-                        <TabsTrigger value="statements">Extractos</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-4 bg-gray-100">
+                        <TabsTrigger value="expenses" className="data-[state=active]:bg-black data-[state=active]:text-white">Gastos</TabsTrigger>
+                        <TabsTrigger value="investments" className="data-[state=active]:bg-black data-[state=active]:text-white">Inversiones</TabsTrigger>
+                        <TabsTrigger value="withdrawals" className="data-[state=active]:bg-black data-[state=active]:text-white">Retiros</TabsTrigger>
+                        <TabsTrigger value="statements" className="data-[state=active]:bg-black data-[state=active]:text-white">Extractos</TabsTrigger>
                     </TabsList>
 
                     <div className="mt-6 grid gap-6 md:grid-cols-2">
                         {/* Form Section */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Registrar Nuevo</CardTitle>
+                                <CardTitle className="text-black">Registrar Nuevo</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <form onSubmit={handleSubmit} className="space-y-4">
+                                <form onSubmit={handleSubmit} className="space-y-4 text-black">
 
                                     {activeTab === "expenses" && (
                                         <>
                                             <div className="space-y-2">
-                                                <label className="text-sm font-medium">Categoría</label>
+                                                <label className="text-sm font-medium text-black">Categoría</label>
                                                 <select
-                                                    className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm"
+                                                    className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm text-black bg-white"
                                                     value={formData.category}
                                                     onChange={e => setFormData({ ...formData, category: e.target.value })}
                                                     required
@@ -129,11 +129,12 @@ export default function FinanceInterface({ data }: { data: any }) {
                                                 </select>
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-sm font-medium">Descripción</label>
+                                                <label className="text-sm font-medium text-black">Descripción</label>
                                                 <Input
                                                     value={formData.description}
                                                     onChange={e => setFormData({ ...formData, description: e.target.value })}
                                                     placeholder="Detalle del gasto"
+                                                    className="text-black placeholder:text-gray-400"
                                                     required
                                                 />
                                             </div>
@@ -142,10 +143,11 @@ export default function FinanceInterface({ data }: { data: any }) {
 
                                     {(activeTab === "investments" || activeTab === "withdrawals") && (
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium">Socio</label>
+                                            <label className="text-sm font-medium text-black">Socio</label>
                                             <Input
                                                 value={formData.partnerName}
                                                 onChange={e => setFormData({ ...formData, partnerName: e.target.value })}
+                                                className="text-black"
                                                 required
                                             />
                                         </div>
@@ -153,9 +155,9 @@ export default function FinanceInterface({ data }: { data: any }) {
 
                                     {activeTab === "investments" && (
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium">Tipo</label>
+                                            <label className="text-sm font-medium text-black">Tipo</label>
                                             <select
-                                                className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm"
+                                                className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm text-black bg-white"
                                                 value={formData.type}
                                                 onChange={e => setFormData({ ...formData, type: e.target.value })}
                                                 required
@@ -170,9 +172,9 @@ export default function FinanceInterface({ data }: { data: any }) {
 
                                     {activeTab === "withdrawals" && (
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium">Concepto</label>
+                                            <label className="text-sm font-medium text-black">Concepto</label>
                                             <select
-                                                className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm"
+                                                className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm text-black bg-white"
                                                 value={formData.concept}
                                                 onChange={e => setFormData({ ...formData, concept: e.target.value })}
                                                 required
@@ -187,11 +189,12 @@ export default function FinanceInterface({ data }: { data: any }) {
 
                                     {activeTab === "statements" && (
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium">Banco</label>
+                                            <label className="text-sm font-medium text-black">Banco</label>
                                             <Input
                                                 value={formData.category} // Reuse category for Bank Name
                                                 onChange={e => setFormData({ ...formData, category: e.target.value })}
                                                 placeholder="Nombre del Banco"
+                                                className="text-black"
                                                 required
                                             />
                                         </div>
@@ -199,11 +202,12 @@ export default function FinanceInterface({ data }: { data: any }) {
 
                                     {activeTab !== "statements" && (
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium">Monto</label>
+                                            <label className="text-sm font-medium text-black">Monto</label>
                                             <Input
                                                 type="number"
                                                 value={formData.amount}
                                                 onChange={e => setFormData({ ...formData, amount: e.target.value })}
+                                                className="text-black"
                                                 required
                                             />
                                         </div>
@@ -211,16 +215,17 @@ export default function FinanceInterface({ data }: { data: any }) {
 
                                     {(activeTab !== "withdrawals") && (
                                         <div className="space-y-2">
-                                            <label className="text-sm font-medium">{activeTab === "statements" ? "Archivo (PDF/Img)" : "Comprobante (Opcional)"}</label>
+                                            <label className="text-sm font-medium text-black">{activeTab === "statements" ? "Archivo (PDF/Img)" : "Comprobante (Opcional)"}</label>
                                             <Input
                                                 type="file"
                                                 onChange={e => setFile(e.target.files?.[0] || null)}
+                                                className="text-black"
                                                 required={activeTab === "statements"}
                                             />
                                         </div>
                                     )}
 
-                                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                                    <Button type="submit" className="w-full bg-black text-white hover:bg-gray-800" disabled={isSubmitting}>
                                         {isSubmitting ? <Loader2 className="animate-spin" /> : "Guardar"}
                                     </Button>
                                 </form>

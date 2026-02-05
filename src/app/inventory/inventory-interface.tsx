@@ -143,8 +143,8 @@ export default function InventoryInterface({ initialItems }: InventoryPageProps)
         <AppLayout>
             <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <h2 className="text-2xl font-bold text-black dark:text-white">Inventario</h2>
-                    <Button onClick={() => setIsModalOpen(true)} className="bg-black text-white hover:bg-gray-800">
+                    <h2 className="text-2xl font-bold text-black">Inventario</h2>
+                    <Button onClick={() => setIsModalOpen(true)} className="bg-black text-white hover:bg-gray-800 shadow-md">
                         <Plus className="w-4 h-4 mr-2" />
                         Nueva Compra
                     </Button>
@@ -155,7 +155,7 @@ export default function InventoryInterface({ initialItems }: InventoryPageProps)
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
                         <Input
                             placeholder="Buscar insumo..."
-                            className="pl-9"
+                            className="pl-9 text-black bg-white"
                             value={mainSearchTerm}
                             onChange={(e) => setMainSearchTerm(e.target.value)}
                         />
@@ -167,19 +167,19 @@ export default function InventoryInterface({ initialItems }: InventoryPageProps)
                         const isLowStock = item.currentStock <= item.minStock
 
                         return (
-                            <Card key={item.id} className={cn("transition-all", isLowStock ? "border-red-200 bg-red-50" : "")}>
+                            <Card key={item.id} className={cn("transition-all bg-white border-gray-200", isLowStock ? "border-red-200 bg-red-50" : "")}>
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                     <div className="space-y-1">
-                                        <CardTitle className="text-base font-semibold">{item.name}</CardTitle>
-                                        <p className="text-xs text-gray-500">{item.category.name}</p>
+                                        <CardTitle className="text-base font-semibold text-black">{item.name}</CardTitle>
+                                        <p className="text-xs text-black">{item.category.name}</p>
                                     </div>
                                     {isLowStock && <AlertTriangle className="h-5 w-5 text-red-500" />}
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold">
-                                        {item.currentStock} <span className="text-sm font-normal text-gray-500">{item.unit}</span>
+                                    <div className="text-2xl font-bold text-black">
+                                        {item.currentStock} <span className="text-sm font-normal text-black">{item.unit}</span>
                                     </div>
-                                    <p className="text-xs text-gray-500 mt-1">
+                                    <p className="text-xs text-black mt-1">
                                         Mínimo: {item.minStock} {item.unit}
                                     </p>
                                 </CardContent>
@@ -192,11 +192,11 @@ export default function InventoryInterface({ initialItems }: InventoryPageProps)
                 {isModalOpen && (
                     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
                         <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 animate-in fade-in zoom-in duration-200">
-                            <h3 className="text-lg font-bold mb-4">Registrar Compra Múltiple</h3>
+                            <h3 className="text-lg font-bold mb-4 text-black">Registrar Compra Múltiple</h3>
                             <form onSubmit={handleBulkPurchase} className="space-y-4">
 
                                 <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
-                                    <div className="grid grid-cols-12 gap-2 text-sm font-medium text-gray-500 mb-2">
+                                    <div className="grid grid-cols-12 gap-2 text-sm font-medium text-black mb-2">
                                         <div className="col-span-6">Insumo</div>
                                         <div className="col-span-3">Cant.</div>
                                         <div className="col-span-3">Costo ($)</div>
@@ -211,7 +211,7 @@ export default function InventoryInterface({ initialItems }: InventoryPageProps)
                                                     placeholder="Nombre"
                                                     onFocus={() => { setActiveRowIndex(index); setIsMenuOpen(true) }}
                                                     onBlur={() => setTimeout(() => { if (activeRowIndex === index) setIsMenuOpen(false) }, 200)}
-                                                    className="w-full"
+                                                    className="w-full text-black placeholder:text-gray-400"
                                                 />
                                                 {/* Autocomplete Dropdown */}
                                                 {activeRowIndex === index && isMenuOpen && row.name.length > 0 && (
@@ -219,7 +219,7 @@ export default function InventoryInterface({ initialItems }: InventoryPageProps)
                                                         {getSuggestions().map(item => (
                                                             <div
                                                                 key={item.id}
-                                                                className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
+                                                                className="p-2 hover:bg-gray-100 cursor-pointer text-sm text-black"
                                                                 onClick={() => {
                                                                     handleRowChange(index, 'name', item.name)
                                                                     setIsMenuOpen(false)
@@ -242,6 +242,7 @@ export default function InventoryInterface({ initialItems }: InventoryPageProps)
                                                     value={row.quantity}
                                                     onChange={e => handleRowChange(index, 'quantity', e.target.value)}
                                                     placeholder="0"
+                                                    className="text-black placeholder:text-gray-400"
                                                 />
                                             </div>
                                             <div className="col-span-3 flex gap-1">
@@ -250,12 +251,13 @@ export default function InventoryInterface({ initialItems }: InventoryPageProps)
                                                     value={row.price}
                                                     onChange={e => handleRowChange(index, 'price', e.target.value)}
                                                     placeholder="$"
+                                                    className="text-black placeholder:text-gray-400"
                                                 />
                                                 {purchaseItems.length > 1 && (
                                                     <button
                                                         type="button"
                                                         onClick={() => removeRow(index)}
-                                                        className="text-red-400 hover:text-red-600 px-1"
+                                                        className="text-red-500 hover:text-red-700 px-1 font-bold"
                                                     >
                                                         &times;
                                                     </button>
@@ -264,32 +266,33 @@ export default function InventoryInterface({ initialItems }: InventoryPageProps)
                                         </div>
                                     ))}
 
-                                    <Button type="button" variant="outline" size="sm" onClick={addRow} className="mt-2 w-full border-dashed">
+                                    <Button type="button" variant="outline" size="sm" onClick={addRow} className="mt-2 w-full border-dashed text-black hover:bg-gray-50">
                                         <Plus className="w-4 h-4 mr-2" /> Agregar otro insumo
                                     </Button>
                                 </div>
 
                                 <div className="border-t pt-4 space-y-4">
-                                    <div className="flex justify-between font-bold text-lg">
+                                    <div className="flex justify-between font-bold text-lg text-black">
                                         <span>Total Factura:</span>
                                         <span>${totalCost.toFixed(2)}</span>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium">Foto Factura (Obligatorio)</label>
+                                        <label className="text-sm font-medium text-black">Foto Factura (Obligatorio)</label>
                                         <Input
                                             type="file"
                                             accept="image/*"
                                             onChange={(e) => setFile(e.target.files?.[0] || null)}
                                             required
+                                            className="text-black"
                                         />
                                     </div>
 
                                     <div className="flex justify-end gap-2 pt-2">
-                                        <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
+                                        <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} className="text-black border-black hover:bg-gray-100">
                                             Cancelar
                                         </Button>
-                                        <Button type="submit" disabled={isSubmitting}>
+                                        <Button type="submit" disabled={isSubmitting} className="bg-black text-white hover:bg-gray-800 shadow-md">
                                             {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                                             Guardar Todo
                                         </Button>

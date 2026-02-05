@@ -291,19 +291,19 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                 {showPaymentModal && (
                     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
                         <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 animate-in fade-in zoom-in duration-200 space-y-4">
-                            <h3 className="text-xl font-bold text-center mb-4">Seleccione Método de Pago</h3>
+                            <h3 className="text-xl font-bold text-center mb-4 text-black">Seleccione Método de Pago</h3>
                             <div className="grid grid-cols-1 gap-3">
-                                <Button size="lg" className="w-full bg-green-600 hover:bg-green-700 text-lg py-6" onClick={() => processSale("CASH")}>
-                                    Efectivo
+                                <Button size="lg" className="w-full bg-black text-white hover:bg-gray-800 text-lg py-6 shadow-md border border-gray-800" onClick={() => processSale("CASH")}>
+                                    Efectivo 💵
                                 </Button>
-                                <Button size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-6" onClick={() => processSale("TRANSFER")}>
-                                    Transferencia
+                                <Button size="lg" className="w-full bg-black text-white hover:bg-gray-800 text-lg py-6 shadow-md border border-gray-800" onClick={() => processSale("TRANSFER")}>
+                                    Transferencia 🏦
                                 </Button>
-                                <Button size="lg" className="w-full bg-purple-600 hover:bg-purple-700 text-lg py-6" onClick={() => processSale("MOBILE_PAYMENT")}>
-                                    Pago Móvil
+                                <Button size="lg" className="w-full bg-black text-white hover:bg-gray-800 text-lg py-6 shadow-md border border-gray-800" onClick={() => processSale("MOBILE_PAYMENT")}>
+                                    Pago Móvil 📱
                                 </Button>
                             </div>
-                            <Button variant="outline" className="w-full mt-4" onClick={() => setShowPaymentModal(false)}>
+                            <Button variant="outline" className="w-full mt-4 text-black border-black hover:bg-gray-100 font-bold" onClick={() => setShowPaymentModal(false)}>
                                 Cancelar
                             </Button>
                         </div>
