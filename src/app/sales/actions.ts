@@ -10,12 +10,23 @@ export async function getProducts() {
     const bebidaProduct = await prisma.product.findFirst({ where: { name: "Bebida", category: "BEBIDA" } })
     if (!bebidaProduct) {
         await prisma.product.create({
-            data: {
-                name: "Bebida",
-                category: "BEBIDA",
-                price: 1.00,
-                active: true
-            }
+            data: { name: "Bebida", category: "BEBIDA", price: 1.00, active: true }
+        })
+    }
+
+    // Ensure "Maltas Desch." product exists
+    const maltaProduct = await prisma.product.findFirst({ where: { name: "Maltas Desch." } })
+    if (!maltaProduct) {
+        await prisma.product.create({
+            data: { name: "Maltas Desch.", category: "BEBIDA", price: 1.20, active: true }
+        })
+    }
+
+    // Ensure "Refresco 1.5L" product exists
+    const refrescoProduct = await prisma.product.findFirst({ where: { name: "Refresco 1.5L" } })
+    if (!refrescoProduct) {
+        await prisma.product.create({
+            data: { name: "Refresco 1.5L", category: "BEBIDA", price: 3.00, active: true }
         })
     }
 
