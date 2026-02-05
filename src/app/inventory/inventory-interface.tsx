@@ -143,8 +143,8 @@ export default function InventoryInterface({ initialItems }: InventoryPageProps)
         <AppLayout>
             <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <h2 className="text-2xl font-bold">Inventario</h2>
-                    <Button onClick={() => setIsModalOpen(true)}>
+                    <h2 className="text-2xl font-bold text-black dark:text-white">Inventario</h2>
+                    <Button onClick={() => setIsModalOpen(true)} className="bg-black text-white hover:bg-gray-800">
                         <Plus className="w-4 h-4 mr-2" />
                         Nueva Compra
                     </Button>

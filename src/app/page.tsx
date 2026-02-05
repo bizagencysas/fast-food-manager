@@ -12,7 +12,7 @@ export default async function DashboardPage() {
     <AppLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold tracking-tight">Dashboard (En Vivo)</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-black dark:text-white">Reporte Diario</h2>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

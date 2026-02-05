@@ -154,9 +154,9 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                 {/* Cart/Ticket Section */}
                 <div className="w-full md:w-96 bg-white rounded-t-xl shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] border-t flex flex-col h-[30vh] md:h-full fixed md:relative bottom-16 md:bottom-0 left-0 right-0 z-40 md:z-0">
                     <div className="p-2 border-b bg-gray-50 rounded-t-xl flex justify-between items-center h-10">
-                        <h2 className="font-bold flex items-center gap-2 text-sm">
+                        <h2 className="font-bold flex items-center gap-2 text-sm text-black dark:text-white">
                             <ShoppingCart className="w-4 h-4" />
-                            Ticket ({cart.reduce((acc, i) => acc + i.quantity, 0)})
+                            Factura ({cart.reduce((acc, i) => acc + i.quantity, 0)})
                         </h2>
                         <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setCart([])} disabled={cart.length === 0}>
                             <Trash2 className="w-3 h-3 text-red-500" />
