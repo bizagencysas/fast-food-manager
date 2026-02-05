@@ -12,18 +12,18 @@ export default async function DashboardPage() {
     <AppLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold tracking-tight text-black dark:text-white">Reporte Diario</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-black">Reporte Diario</h2>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Ventas Hoy</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-black">Ventas Hoy</CardTitle>
+              <DollarSign className="h-4 w-4 text-black" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${data.totalSales.toFixed(2)}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold text-black">${data.totalSales.toFixed(2)}</div>
+              <p className="text-xs text-black font-medium">
                 Ventas registradas hoy
               </p>
             </CardContent>
@@ -31,12 +31,12 @@ export default async function DashboardPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Transacciones</CardTitle>
-              <ShoppingBag className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-black">Transacciones</CardTitle>
+              <ShoppingBag className="h-4 w-4 text-black" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{data.transactionCount}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold text-black">{data.transactionCount}</div>
+              <p className="text-xs text-black font-medium">
                 Pedidos procesados
               </p>
             </CardContent>
@@ -44,12 +44,12 @@ export default async function DashboardPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Gastos Hoy</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-black">Gastos Hoy</CardTitle>
+              <TrendingUp className="h-4 w-4 text-black" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-500">${data.totalExpenses.toFixed(2)}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold text-red-600">${data.totalExpenses.toFixed(2)}</div>
+              <p className="text-xs text-black font-medium">
                 Compras e Insumos
               </p>
             </CardContent>
@@ -57,14 +57,14 @@ export default async function DashboardPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Utilidad Neta</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-black">Utilidad Neta</CardTitle>
+              <Users className="h-4 w-4 text-black" />
             </CardHeader>
             <CardContent>
               <div className={`text-2xl font-bold ${data.utility >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 ${data.utility.toFixed(2)}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-black font-medium">
                 Margen del día
               </p>
             </CardContent>
