@@ -122,7 +122,7 @@ export async function recordBulkPurchase(data: {
                         categoryId: targetCategoryId,
                         unit: 'Unidad',
                         currentStock: 0,
-                        minStock: 5
+                        minStock: 1
                     })),
                     skipDuplicates: true
                 });
