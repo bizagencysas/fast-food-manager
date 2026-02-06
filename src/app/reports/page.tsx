@@ -14,7 +14,7 @@ export default async function ReportsPage() {
                 <div className="flex justify-between items-center">
                     <h2 className="text-2xl font-bold">Reporte Diario</h2>
                     <a
-                        href={`https://wa.me/573026684956?text=Reporte%20del%20Dia:%20Ventas%20$${report.totalSales}%20-%20Gastos%20$${report.totalExpenses}%20-%20Utilidad%20$${report.utility}`}
+                        href={`https://wa.me/573026684956?text=Reporte%20del%20Dia:%20Ventas%20$${report.totalSales}%20(Bs.${report.totalSalesBs.toFixed(2)})%20-%20Gastos%20$${report.totalExpenses}%20-%20Utilidad%20$${report.utility}`}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
@@ -29,6 +29,11 @@ export default async function ReportsPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold text-green-600">${report.totalSales.toFixed(2)}</div>
+                            {report.totalSalesBs > 0 && (
+                                <div className="text-sm text-gray-500 font-medium mt-1">
+                                    Bs. {report.totalSalesBs.toLocaleString('es-VE', { minimumFractionDigits: 2 })}
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
 
