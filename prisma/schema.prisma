@@ -49,6 +49,8 @@ model Product {
   updatedAt   DateTime  @updatedAt
   
   saleItems   SaleItem[]
+  
+  recipe      Recipe?
 }
 
 model Sale {
@@ -106,6 +108,11 @@ model InventoryItem {
   updatedAt   DateTime          @updatedAt
   
   purchases   InventoryPurchase[]
+  usedIn      RecipeIngredient[]
+  shoppingList ShoppingItem[]
+  
+  lastCost    Decimal?          @db.Decimal(10, 2) // Cache of last purchase price
+  lastCurrency String           @default("USD")
 }
 
 model InventoryPurchase {
@@ -209,4 +216,43 @@ model ActivityLog {
   details     String?   // JSON string con detalles del cambio
   
   timestamp   DateTime  @default(now())
+}
+
+model Recipe {
+  id          String             @id @default(cuid())
+  
+  productId   String             @unique
+  product     Product            @relation(fields: [productId], references: [id])
+  
+  ingredients RecipeIngredient[]
+  
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model RecipeIngredient {
+  id              String        @id @default(cuid())
+  
+  recipeId        String
+  recipe          Recipe        @relation(fields: [recipeId], references: [id])
+  
+  inventoryItemId String
+  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id])
+  
+  quantity        Decimal       @db.Decimal(10, 4) // Amount used per unit (e.g., 0.100 for 100g)
+}
+
+model ShoppingItem {
+  id              String        @id @default(cuid())
+  
+  inventoryItemId String
+  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id])
+  
+  quantity        Decimal       @db.Decimal(10, 2)
+  isPurchased     Boolean       @default(false)
+  
+  estimatedPrice  Decimal       @db.Decimal(10, 2) 
+  currency        String        @default("USD") // USD or VES
+  
+  updatedAt       DateTime      @updatedAt
 }
