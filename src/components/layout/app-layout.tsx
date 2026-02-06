@@ -2,16 +2,14 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, ShoppingCart, Package, DollarSign, PieChart, Menu, X, LogOut } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import { handleSignOut } from "@/app/actions/auth"
+import { LayoutDashboard, ShoppingCart, Package, DollarSign, PieChart, Menu, X, LogOut, ChefHat, ClipboardList } from "lucide-react"
 
 const NAV_ITEMS = [
     { label: "Inicio", href: "/", icon: LayoutDashboard },
     { label: "Ventas", href: "/sales", icon: ShoppingCart },
     { label: "Inventario", href: "/inventory", icon: Package },
+    { label: "Recetas", href: "/inventory/recipes", icon: ChefHat },
+    { label: "Lista de Compras", href: "/inventory/shopping-list", icon: ClipboardList },
     { label: "Finanzas", href: "/finance", icon: DollarSign },
     { label: "Reportes", href: "/reports", icon: PieChart },
 ]
