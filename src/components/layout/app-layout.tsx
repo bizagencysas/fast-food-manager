@@ -3,6 +3,10 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { LayoutDashboard, ShoppingCart, Package, DollarSign, PieChart, Menu, X, LogOut, ChefHat, ClipboardList } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import { handleSignOut } from "@/app/actions/auth"
 
 const NAV_ITEMS = [
     { label: "Inicio", href: "/", icon: LayoutDashboard },
