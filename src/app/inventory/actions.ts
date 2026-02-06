@@ -39,32 +39,45 @@ export async function recordBulkPurchase(data: {
         return { success: false, error: "No hay items para registrar." }
     }
 
+    // Validate inputs
+    for (const item of data.items) {
+        if (isNaN(item.quantity) || item.quantity <= 0) return { success: false, error: `Cantidad inválida para: ${item.name}` }
+        if (isNaN(item.price) || item.price < 0) return { success: false, error: `Precio inválido para: ${item.name}` }
+    }
+
     try {
+        // Ensure user exists (Fix for FK constraint error)
+        // Using same logic as Sales to ensure 'admin-id' or similar exists
+        const user = await prisma.user.upsert({
+            where: { email: 'freddy' },
+            create: {
+                id: 'admin-id', // Fixed ID for simplicity in this version
+                email: 'freddy',
+                name: 'Freddy Admin',
+                passwordHash: 'freddy',
+                role: 'ADMIN'
+            },
+            update: {}
+        })
+
+        const verifiedUserId = user.id
+
         // 1. Normalization & Deduplication (Memory)
-        // Map to store unique items by normalized name. 
-        // If duplicates exist in input, we sum quantities and average/sum price? 
-        // For simplicity and safety, we will just take the last one or sum them.
-        // Let's sum quantities and average unit price if needed, but for now assuming user wants distinct entries.
-        // ACTUALLY, strict deduplication by name is safer to prevent PK conflicts if we were inserting into a unique table,
-        // but here we are creating Purchase records (many) and updating Item stock (one).
-        
-        const normalizedItemsMap = new Map<string, { 
-            originalName: string, 
-            quantity: number, 
-            price: number 
+        const normalizedItemsMap = new Map<string, {
+            originalName: string,
+            quantity: number,
+            price: number
         }>();
 
         for (const item of data.items) {
             const normalized = item.name.trim().charAt(0).toUpperCase() + item.name.trim().slice(1).toLowerCase();
             const existing = normalizedItemsMap.get(normalized);
             if (existing) {
-                // Determine how to handle duplicates in the SAME bulk upload.
-                // Best approach: Accumulate quantity, accumulate price (assuming price is total cost for that line).
                 existing.quantity += item.quantity;
                 existing.price += item.price;
             } else {
                 normalizedItemsMap.set(normalized, {
-                    originalName: normalized, // Use clean name
+                    originalName: normalized,
                     quantity: item.quantity,
                     price: item.price
                 });
@@ -80,8 +93,14 @@ export async function recordBulkPurchase(data: {
                 where: { name: 'OTROS' }
             }) || await tx.inventoryCategory.findFirst();
 
-            if (!defaultCategory) throw new Error("No inventory categories found.");
-            const defaultCategoryId = defaultCategory.id;
+            if (!defaultCategory) {
+                // Create default category if missing
+                const newCat = await tx.inventoryCategory.create({ data: { name: 'OTROS' } })
+                if (!newCat) throw new Error("No inventory categories available.");
+            }
+            // Use 'OTROS' or the first one found
+            const targetCategoryId = defaultCategory?.id || (await tx.inventoryCategory.findFirst())?.id;
+            if (!targetCategoryId) throw new Error("Critical: No category usable.");
 
             // 2. Bulk Fetch Existing Items
             const existingDbItems = await tx.inventoryItem.findMany({
@@ -92,24 +111,24 @@ export async function recordBulkPurchase(data: {
             });
 
             const existingNameSet = new Set(existingDbItems.map(i => i.name));
-            
+
             // 3. Identify New Items and Bulk Create
             const newNames = uniqueNames.filter(name => !existingNameSet.has(name));
-            
+
             if (newNames.length > 0) {
                 await tx.inventoryItem.createMany({
                     data: newNames.map(name => ({
                         name: name,
-                        categoryId: defaultCategoryId,
+                        categoryId: targetCategoryId,
                         unit: 'Unidad',
                         currentStock: 0,
                         minStock: 5
                     })),
-                    skipDuplicates: true // Safety net
+                    skipDuplicates: true
                 });
             }
 
-            // 4. Re-Fetch All Items to get IDs (Map Name -> ID)
+            // 4. Re-Fetch All Items to get IDs
             const allDbItems = await tx.inventoryItem.findMany({
                 where: {
                     name: { in: uniqueNames }
@@ -134,7 +153,7 @@ export async function recordBulkPurchase(data: {
                     price: item.price,
                     supplier: data.supplier,
                     receiptUrl: data.receiptUrl,
-                    userId: data.userId
+                    userId: verifiedUserId // Use the valid user ID
                 };
             });
 
@@ -144,62 +163,41 @@ export async function recordBulkPurchase(data: {
                 });
             }
 
-            // 6. Optimized Stock Update using RAW SQL
-            // Updating many rows with different values is tricky in Prisma without raw SQL.
-            // We construct a CASE statement or use a series of minimal batched updates.
-            // For true scalability with 999 items, ONE raw query with CASE is best.
-            // Database: PostgreSQL.
+            // 6. Optimized Stock Update
+            const ids: string[] = [];
+            let caseString = 'CASE id ';
 
-            // Format: UPDATE "InventoryItem" SET "currentStock" = "currentStock" + CASE "id" WHEN 'id1' THEN qty1 WHEN 'id2' THEN qty2 ... END WHERE "id" IN ('id1', 'id2', ...);
-            
-            // Chunking the raw query is safer for parameter limits (Postgres limit ~65535params). 
-            // 1000 items * 2 params (id, qty) = 2000 params. Safe for one batch, but let's chunk to be safe for distinct chunks.
-            const CHUNK_SIZE = 500;
-            for (let i = 0; i < uniqueItems.length; i += CHUNK_SIZE) {
-                const chunk = uniqueItems.slice(i, i + CHUNK_SIZE);
-                
-                // We need to safely construct the query. Prisma $executeRawUnsafe is okay here IF we trust generated IDs, 
-                // but strictly passing mapped params is better. However, CASE logic is hard with tagged templates.
-                // We will iterate and do simple concurrent updates if raw SQL complexity is too high risk for syntax error now,
-                // BUT user requested 'raw SQL' for speed.
-                
-                // Let's generate the CASE parts safely.
-                const ids: string[] = [];
-                let caseString = 'CASE id ';
-                
-                for (const item of chunk) {
-                    const id = nameToIdMap.get(item.originalName);
-                    if (id) {
-                        // Sanitize ID just in case (it's UUID/CUID from DB, safe)
-                        caseString += `WHEN '${id}' THEN ${item.quantity} `;
-                        ids.push(id);
-                    }
-                }
-                caseString += 'ELSE 0 END';
-
-                if (ids.length > 0) {
-                    const idsString = ids.map(id => `'${id}'`).join(',');
-                    
-                    const query = `
-                        UPDATE "InventoryItem"
-                        SET "currentStock" = "currentStock" + ${caseString},
-                        "updatedAt" = NOW()
-                        WHERE "id" IN (${idsString})
-                    `;
-
-                    // Using executeRawUnsafe because constructing this dynamic CASE with tagged template is extremely verbose
-                    await tx.$executeRawUnsafe(query);
+            for (const item of uniqueItems) {
+                const id = nameToIdMap.get(item.originalName);
+                if (id) {
+                    caseString += `WHEN '${id}' THEN ${item.quantity} `;
+                    ids.push(id);
                 }
             }
+            caseString += 'ELSE 0 END';
+
+            if (ids.length > 0) {
+                const idsString = ids.map(id => `'${id}'`).join(',');
+
+                const query = `
+                    UPDATE "InventoryItem"
+                    SET "currentStock" = "currentStock" + ${caseString},
+                    "updatedAt" = NOW()
+                    WHERE "id" IN (${idsString})
+                `;
+
+                await tx.$executeRawUnsafe(query);
+            }
         }, {
-            maxWait: 10000, // 10s wait for lock
-            timeout: 60000  // 60s transaction timeout for massive batches
+            maxWait: 10000,
+            timeout: 60000
         });
 
         revalidatePath('/inventory')
         return { success: true }
     } catch (error) {
         console.error("Bulk purchase high-volume error:", error)
-        return { success: false, error: "Falló el registro masivo. Revisa los logs." }
+        // Return actual error message for debugging
+        return { success: false, error: "Error: " + (error instanceof Error ? error.message : String(error)) }
     }
 }
