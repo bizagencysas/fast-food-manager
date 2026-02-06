@@ -121,9 +121,6 @@ export default function InventoryInterface({ initialItems }: InventoryPageProps)
 
             // Validate
             if (!file) { alert("La foto de la factura es obligatoria."); return; }
-
-            // Validate
-            if (!file) { alert("La foto de la factura es obligatoria."); return; }
             if (purchaseItems.some(i => !i.name || !i.quantity || !i.price)) {
                 alert("Completa todos los campos de los insumos (Nombre, Cantidad y Costo $)."); return;
             }
