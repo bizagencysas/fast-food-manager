@@ -21,7 +21,11 @@ export async function getShoppingList() {
         ...item,
         quantity: Number(item.quantity),
         estimatedPrice: Number(item.estimatedPrice),
-        currentStock: 0 // We could fetch this if needed for context
+        currentStock: 0,
+        inventoryItem: {
+            ...item.inventoryItem,
+            lastCost: item.inventoryItem.lastCost ? Number(item.inventoryItem.lastCost) : null
+        }
     }))
 }
 
