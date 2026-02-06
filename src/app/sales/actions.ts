@@ -50,6 +50,7 @@ export async function createSale(data: {
     total: number,
     paymentMethod: "CASH" | "TRANSFER" | "MOBILE_PAYMENT", // Matches specific string union
     paymentReference?: string, // New optional field
+    exchangeRate?: number, // New optional field
     notes?: string
 }) {
     try {
@@ -93,6 +94,8 @@ export async function createSale(data: {
                 total: data.total,
                 paymentMethod: data.paymentMethod as PaymentMethod,
                 paymentReference: data.paymentReference, // Save reference
+                exchangeRate: data.exchangeRate,
+                totalBs: data.exchangeRate ? (data.total * data.exchangeRate) : undefined,
                 notes: data.notes,
                 items: {
                     create: data.items.map(item => {

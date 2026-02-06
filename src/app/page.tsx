@@ -25,6 +25,7 @@ export default async function DashboardPage() {
               <div className="text-2xl font-bold text-black">${data.totalSales.toFixed(2)}</div>
               <p className="text-xs text-black font-medium">
                 Ventas registradas hoy
+                {data.totalSalesBs > 0 && <span className="block text-gray-500 mt-1">Has hecho: {data.totalSalesBs.toFixed(2)} Bs</span>}
               </p>
             </CardContent>
           </Card>

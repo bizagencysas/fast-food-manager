@@ -59,6 +59,8 @@ model Sale {
   notes         String?
   imageUrl      String?       // Comprobante si es transferencia
   paymentReference String?    // Last 4 digits for Transfer/Mobile Payment
+  exchangeRate  Float?        // Tasa del día (BCV)
+  totalBs       Decimal?      @db.Decimal(12, 2) // Total en Bolívares al momento de la venta
   
   userId        String
   user          User          @relation(fields: [userId], references: [id])

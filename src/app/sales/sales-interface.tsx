@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { AppLayout } from "@/components/layout/app-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Plus, Minus, Trash2, ShoppingCart, Loader2 } from "lucide-react"
+import { Plus, Minus, Trash2, ShoppingCart, Loader2, Banknote } from "lucide-react"
 import { createSale } from "./actions"
+import { getBCVRate } from "@/app/actions/bcv"
 
 // Types
 type Product = {
@@ -38,6 +39,19 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
     // Payment Flow State
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"TRANSFER" | "MOBILE_PAYMENT" | null>(null)
     const [paymentReference, setPaymentReference] = useState("")
+
+    // BCV Rate State
+    const [bcvRate, setBcvRate] = useState<number | null>(null)
+    const [bcvDate, setBcvDate] = useState<string | null>(null)
+
+    useEffect(() => {
+        getBCVRate().then(res => {
+            if (res.success && res.rate) {
+                setBcvRate(res.rate)
+                setBcvDate(res.date)
+            }
+        })
+    }, [])
 
     const filteredProducts = initialProducts.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -114,7 +128,8 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
             })),
             total: total,
             paymentMethod: method,
-            paymentReference: ((method === "TRANSFER" || method === "MOBILE_PAYMENT") && paymentReference) ? paymentReference : undefined
+            paymentReference: ((method === "TRANSFER" || method === "MOBILE_PAYMENT") && paymentReference) ? paymentReference : undefined,
+            exchangeRate: bcvRate || undefined // Pass current rate if available
         })
 
         setIsSubmitting(false)
@@ -158,6 +173,21 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                     </div>
 
                     <div className="grid grid-cols-3 lg:grid-cols-3 gap-2 overflow-y-auto pb-48 md:pb-0">
+                        {/* BCV Rate Card */}
+                        <Card className="bg-emerald-900 border-emerald-800 shadow-md">
+                            <CardContent className="p-2 flex flex-col items-center text-center gap-1 h-full justify-center text-white">
+                                <div className="h-8 w-8 bg-emerald-800 rounded-full flex items-center justify-center text-white font-bold overflow-hidden text-xs">
+                                    <Banknote className="w-4 h-4" />
+                                </div>
+                                <h3 className="font-bold text-xs leading-tight">
+                                    TASA BCV
+                                </h3>
+                                <div className="font-bold text-sm">
+                                    {bcvRate ? `${bcvRate} Bs` : "..."}
+                                </div>
+                            </CardContent>
+                        </Card>
+
                         {/* Always show Custom Item Button first */}
                         <Card
                             className="cursor-pointer border-dashed border-2 border-gray-300 hover:border-black transition-colors active:scale-95 bg-gray-50"
@@ -191,6 +221,7 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                                     </h3>
                                     <div className="font-bold text-sm text-blue-600">
                                         ${product.price.toFixed(2)}
+                                        {bcvRate && <span className="text-xs text-gray-400 block font-normal">{(product.price * bcvRate).toFixed(2)} Bs</span>}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -221,7 +252,10 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                                 <div key={item.id} className="flex justify-between items-center text-xs text-black font-medium">
                                     <div className="flex-1 truncate pr-2">
                                         <p className="truncate font-bold text-black">{item.name}</p>
-                                        <p className="text-black font-semibold text-[10px]">${item.price.toFixed(2)} x {item.quantity}</p>
+                                        <p className="text-black font-semibold text-[10px]">
+                                            ${item.price.toFixed(2)} x {item.quantity}
+                                            {bcvRate && <span className="text-gray-500 ml-1">({(item.price * item.quantity * bcvRate).toFixed(2)} Bs)</span>}
+                                        </p>
                                     </div>
                                     <div className="flex items-center gap-1">
                                         <Button variant="outline" size="icon" className="h-6 w-6 border-black text-black" onClick={() => updateQuantity(item.id, -1)}>
@@ -243,7 +277,10 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                     <div className="p-2 border-t bg-gray-50 space-y-2">
                         <div className="flex justify-between items-center text-sm font-bold text-black">
                             <span>Total</span>
-                            <span>${total.toFixed(2)}</span>
+                            <div className="text-right">
+                                <div>${total.toFixed(2)}</div>
+                                {bcvRate && <div className="text-xs text-gray-500">{(total * bcvRate).toFixed(2)} Bs</div>}
+                            </div>
                         </div>
                         <Button
                             className="w-full h-10 text-base bg-black text-white hover:bg-gray-800 shadow-md font-bold"
@@ -321,6 +358,7 @@ export default function SalesInterface({ initialProducts }: SalesInterfaceProps)
                                     </h3>
                                     <p className="text-sm text-center text-gray-500 mb-4">
                                         Total a Pagar: <span className="font-bold text-black text-lg">${total.toFixed(2)}</span>
+                                        {bcvRate && <div className="text-sm font-medium">{(total * bcvRate).toFixed(2)} Bs</div>}
                                     </p>
 
                                     <div className="space-y-4">
