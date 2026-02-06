@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
 // I will create a basic Modal component in this file or use conditional rendering.
 
 import { uploadImage } from "@/app/actions/upload"
-import { recordPurchase } from "./actions"
+import { recordPurchase, recordBulkPurchase } from "./actions"
 
 // Types
 type InventoryItem = {
@@ -111,7 +111,8 @@ export default function InventoryInterface({ initialItems }: InventoryPageProps)
         }
 
         // Submit Bulk Logic
-        const result = await import("./actions").then(mod => mod.recordBulkPurchase({
+        // Using static import for better type safety and bundling
+        const result = await recordBulkPurchase({
             items: purchaseItems.map(i => ({
                 name: i.name,
                 quantity: Number(i.quantity),
@@ -119,7 +120,7 @@ export default function InventoryInterface({ initialItems }: InventoryPageProps)
             })),
             receiptUrl,
             userId: "mock-user-id"
-        }))
+        })
 
         if (result.success) {
             alert("Compra registrada correctamente!")
