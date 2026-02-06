@@ -2,10 +2,11 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, ShoppingCart, Package, DollarSign, PieChart, Menu, X } from "lucide-react"
+import { LayoutDashboard, ShoppingCart, Package, DollarSign, PieChart, Menu, X, LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import { handleSignOut } from "@/app/actions/auth"
 
 const NAV_ITEMS = [
     { label: "Inicio", href: "/", icon: LayoutDashboard },
@@ -75,12 +76,23 @@ export function Sidebar() {
                 })}
             </nav>
             <div className="p-4 border-t">
-                <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-gray-200" />
-                    <div>
-                        <p className="text-sm font-medium">Usuario</p>
-                        <p className="text-xs text-gray-500">Operador</p>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 rounded-full bg-gray-200" />
+                        <div>
+                            <p className="text-sm font-medium">Usuario</p>
+                            <p className="text-xs text-gray-500">Operador</p>
+                        </div>
                     </div>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleSignOut()}
+                        className="text-gray-500 hover:text-red-600"
+                        title="Cerrar Sesión"
+                    >
+                        <LogOut className="w-5 h-5" />
+                    </Button>
                 </div>
             </div>
         </div>
