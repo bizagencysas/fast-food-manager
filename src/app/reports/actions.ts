@@ -53,6 +53,10 @@ export async function getDailyReport(dateInput?: string) {
         .slice(0, 5)
         .map(([name, quantity]) => ({ name, quantity }))
 
+    const pendingShoppingItems = await prisma.shoppingItem.count({
+        where: { isPurchased: false }
+    })
+
     return {
         date: date.toISOString(),
         totalSales,
@@ -60,6 +64,7 @@ export async function getDailyReport(dateInput?: string) {
         totalExpenses,
         utility,
         transactionCount: sales.length,
-        topProducts
+        topProducts,
+        pendingShoppingItems
     }
 }
